@@ -92,6 +92,7 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
+vim.opt.guifont = 'JetBrainsMono Nerd Font Mono:h9'
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -153,6 +154,9 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -829,12 +833,6 @@ require('lazy').setup({
     end,
   },
 
-  --lazy
-  {
-    'nvim-telescope/telescope-file-browser.nvim',
-    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
-  },
-
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -876,8 +874,42 @@ require('lazy').setup({
   },
 })
 
-vim.opt.foldmethod = 'expr'
-vim.foldexpr = 'nvim_treesitter#foldexpr()'
+-- go to Dragon folder
+vim.keymap.set('n', '<F12>', function()
+  vim.loop.chdir 'D:/perforce/Dragon/Dragon/Source'
+  print('moved to ' .. vim.loop.cwd())
+end)
+
+-- go to scraches / note
+vim.keymap.set('n', '<F2>', function()
+  local f = vim.env.HOME .. '/Documents/Scratch'
+  print(f)
+  vim.loop.chdir(f)
+  print('moved to ' .. vim.loop.cwd())
+end)
+
+-- open journal
+vim.keymap.set('n', '<F10>', function()
+  local f = vim.env.HOME .. '/Documents/Scratch'
+  vim.cmd.edit(f .. '/journal.md')
+end)
+
+function write_current_date_to_buffer()
+  -- Get the current date in YYYY-MM-DD format
+  local date = os.date '%Y-%m-%d'
+  -- Convert the date string into a table of lines
+  local lines = { '# ' .. date }
+  -- To get the current buffer in Lua within Neovim, you can use the
+  local buf = vim.api.nvim_get_current_buf()
+  -- Write the lines to the buffer
+  vim.api.nvim_buf_set_lines(buf, 0, 0, true, lines)
+end
+
+-- open neovim config
+vim.keymap.set('n', '<F11>', function()
+  local f = vim.fn.stdpath 'config'
+  vim.cmd.edit(f .. '/init.lua')
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
