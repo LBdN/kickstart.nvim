@@ -558,6 +558,7 @@ require('lazy').setup({
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      require('lspconfig').gdscript.setup(capabilities)
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -735,7 +736,7 @@ require('lazy').setup({
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
           ['<C-y>'] = cmp.mapping.confirm { select = true },
-          ['<C-Space>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -834,6 +835,8 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      require('mini.pairs').setup()
+
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
@@ -842,7 +845,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'gdscript', 'godot_resource', 'gdshader', 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -885,7 +888,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
@@ -920,25 +923,16 @@ require('lazy').setup({
   },
 })
 
--- go to Dragon folder
-vim.keymap.set('n', '<F12>', function()
-  vim.loop.chdir 'D:/perforce/Dragon/Dragon/Source'
-  print('moved to ' .. vim.loop.cwd())
-end)
-
--- go to scraches / note
-vim.keymap.set('n', '<F2>', function()
-  local f = vim.env.HOME .. '/Documents/Scratch'
-  print(f)
-  vim.loop.chdir(f)
-  print('moved to ' .. vim.loop.cwd())
-end)
-
 -- open journal
 vim.keymap.set('n', '<F10>', function()
   local f = vim.env.HOME .. '/Documents/Scratch'
   vim.cmd.edit(f .. '/journal.md')
 end)
+
+local projectfile = vim.fn.getcwd() .. '/project.godot'
+if projectfile then
+  vim.fn.serverstart '127.0.0.1:6004'
+end
 
 function write_current_date_to_buffer()
   -- Get the current date in YYYY-MM-DD format
