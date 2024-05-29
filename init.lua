@@ -934,7 +934,7 @@ if projectfile then
   vim.fn.serverstart '127.0.0.1:6004'
 end
 
-function write_current_date_to_buffer()
+function Write_current_date_to_buffer()
   -- Get the current date in YYYY-MM-DD format
   local date = os.date '%Y-%m-%d'
   -- Convert the date string into a table of lines
